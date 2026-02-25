@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import com.TETOSOFT.core.GameConstants;
 import com.TETOSOFT.core.GameCore;
+import com.TETOSOFT.graphics.CRTOverlay;
 import com.TETOSOFT.graphics.Sprite;
 import com.TETOSOFT.tilegame.sprites.Creature;
 import com.TETOSOFT.tilegame.sprites.Player;
@@ -21,7 +22,9 @@ public class GameEngine extends GameCore implements CollisionSystem.Listener {
     // Estados de pantalla
     // -------------------------------------------------------------------------
 
-    private enum GameState { MAIN_MENU, PLAYING, PAUSED, GAME_OVER }
+    private enum GameState {
+        MAIN_MENU, PLAYING, PAUSED, GAME_OVER
+    }
 
     private GameState state = GameState.MAIN_MENU;
 
@@ -40,15 +43,17 @@ public class GameEngine extends GameCore implements CollisionSystem.Listener {
     // Subsystems
     // -------------------------------------------------------------------------
 
-    private TileMap          map;
-    private MapLoader        mapLoader;
-    private TileMapDrawer    drawer;
-    private PhysicsSystem    physics;
-    private CollisionSystem  collision;
+    private TileMap map;
+    private MapLoader mapLoader;
+    private TileMapDrawer drawer;
+    private CRTOverlay crtOverlay;
+    private long lastElapsedTime;
+    private PhysicsSystem physics;
+    private CollisionSystem collision;
     private PlayerController controller;
-    private HudRenderer      hud;
-    private MenuRenderer     menuRenderer;
-    private MenuController   menuController;
+    private HudRenderer hud;
+    private MenuRenderer menuRenderer;
+    private MenuController menuController;
 
     // -------------------------------------------------------------------------
     // Lifecycle
@@ -58,13 +63,14 @@ public class GameEngine extends GameCore implements CollisionSystem.Listener {
     public void init() {
         super.init();
 
-        mapLoader      = new MapLoader(screen.getWindow().getGraphicsConfiguration());
-        drawer         = new TileMapDrawer();
-        physics        = new PhysicsSystem();
-        collision      = new CollisionSystem(this);
-        controller     = new PlayerController();
-        hud            = new HudRenderer();
-        menuRenderer   = new MenuRenderer();
+        mapLoader = new MapLoader(screen.getWindow().getGraphicsConfiguration());
+        drawer = new TileMapDrawer();
+        crtOverlay = new CRTOverlay();
+        physics = new PhysicsSystem();
+        collision = new CollisionSystem(this);
+        controller = new PlayerController();
+        hud = new HudRenderer();
+        menuRenderer = new MenuRenderer();
         menuController = new MenuController();
 
         controller.init(screen.getWindow());
@@ -84,24 +90,40 @@ public class GameEngine extends GameCore implements CollisionSystem.Listener {
 
     @Override
     public void update(long elapsedTime) {
+        lastElapsedTime = elapsedTime;
         switch (state) {
-            case MAIN_MENU: updateMainMenu(); break;
-            case PLAYING:   updatePlaying(elapsedTime); break;
-            case PAUSED:    updatePaused(); break;
-            case GAME_OVER: updateGameOver(); break;
+            case MAIN_MENU:
+                updateMainMenu();
+                break;
+            case PLAYING:
+                updatePlaying(elapsedTime);
+                break;
+            case PAUSED:
+                updatePaused();
+                break;
+            case GAME_OVER:
+                updateGameOver();
+                break;
         }
     }
 
     private void updateMainMenu() {
         // Navegación: 3 botones (Jugar, Ajustes, Salir)
-        if (menuController.isUpPressed())   menuSelection = Math.max(0, menuSelection - 1);
-        if (menuController.isDownPressed()) menuSelection = Math.min(2, menuSelection + 1);
+        if (menuController.isUpPressed())
+            menuSelection = Math.max(0, menuSelection - 1);
+        if (menuController.isDownPressed())
+            menuSelection = Math.min(2, menuSelection + 1);
 
         if (menuController.isEnterPressed()) {
             switch (menuSelection) {
-                case 0: startGame();      break; // Jugar
-                case 1: /* Ajustes — sin implementar */ break;
-                case 2: stop();           break; // Salir
+                case 0:
+                    startGame();
+                    break; // Jugar
+                case 1:
+                    /* Ajustes — sin implementar */ break;
+                case 2:
+                    stop();
+                    break; // Salir
             }
         }
     }
@@ -127,7 +149,8 @@ public class GameEngine extends GameCore implements CollisionSystem.Listener {
             return;
         }
 
-        if (controller.isDebugTogglePressed()) debugHitboxes = !debugHitboxes;
+        if (controller.isDebugTogglePressed())
+            debugHitboxes = !debugHitboxes;
 
         updateCreatures(elapsedTime, player);
     }
@@ -140,13 +163,17 @@ public class GameEngine extends GameCore implements CollisionSystem.Listener {
 
     private void updateGameOver() {
         // Navegación: 2 botones (Volver a jugar, Menú principal)
-        if (menuController.isUpPressed())   menuSelection = Math.max(0, menuSelection - 1);
-        if (menuController.isDownPressed()) menuSelection = Math.min(1, menuSelection + 1);
+        if (menuController.isUpPressed())
+            menuSelection = Math.max(0, menuSelection - 1);
+        if (menuController.isDownPressed())
+            menuSelection = Math.min(1, menuSelection + 1);
 
         if (menuController.isEnterPressed()) {
             switch (menuSelection) {
-                case 0: startGame();      break; // Volver a jugar
-                case 1:                          // Menú principal
+                case 0:
+                    startGame();
+                    break; // Volver a jugar
+                case 1: // Menú principal
                     state = GameState.MAIN_MENU;
                     menuSelection = 0;
                     break;
@@ -180,12 +207,15 @@ public class GameEngine extends GameCore implements CollisionSystem.Listener {
                 menuRenderer.drawGameOver(g, screen.getWidth(), screen.getHeight(), menuSelection);
                 break;
         }
+        // CRT overlay — siempre encima de todo, en todos los estados
+        crtOverlay.draw(g, screen.getWidth(), screen.getHeight(), lastElapsedTime);
     }
 
     private void drawGame(Graphics2D g) {
         drawer.draw(g, map, screen.getWidth(), screen.getHeight());
         hud.draw(g, (Player) map.getPlayer(), lives, coins, mapLoader.currentMap, debugHitboxes, screen.getWidth());
-        if (debugHitboxes) hud.drawHitboxes(g, map, screen.getWidth(), screen.getHeight());
+        if (debugHitboxes)
+            hud.drawHitboxes(g, map, screen.getWidth(), screen.getHeight());
     }
 
     private void drawBackground(Graphics2D g) {
@@ -267,10 +297,12 @@ public class GameEngine extends GameCore implements CollisionSystem.Listener {
             // Recoger spawns de SpawnerGrub
             if (sprite instanceof SpawnerGrub) {
                 Sprite spawn = ((SpawnerGrub) sprite).pollSpawn();
-                if (spawn != null) toAdd.add(spawn);
+                if (spawn != null)
+                    toAdd.add(spawn);
             }
         }
 
-        for (Sprite s : toAdd) map.addSprite(s);
+        for (Sprite s : toAdd)
+            map.addSprite(s);
     }
 }
