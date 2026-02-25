@@ -71,22 +71,26 @@ public abstract class GameCore {
     }
 
     /**
-     * Updates game state.  Default implementation does nothing.
+     * Updates game state. Default implementation does nothing.
      *
      * @param elapsedTime milliseconds since the last frame
      */
-    public void update(long elapsedTime) {}
+    public void update(long elapsedTime) {
+    }
 
     /** Renders the current frame. */
     public abstract void draw(Graphics2D g);
 
     /**
      * Waits 2 seconds for the JVM to exit on its own, then forces
-     * {@code System.exit(0)}.  Needed when the Java Sound system is active.
+     * {@code System.exit(0)}. Needed when the Java Sound system is active.
      */
     private void lazilyExit() {
         Thread t = new Thread(() -> {
-            try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ignored) {
+            }
             System.exit(0);
         });
         t.setDaemon(true);
