@@ -10,7 +10,7 @@ public abstract class GameCore {
     protected static final int FONT_SIZE = 18;
 
     // Resolucion de la ventana al iniciar
-    private static final int WINDOW_WIDTH  = 800;
+    private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
 
     private boolean isRunning;
@@ -35,7 +35,8 @@ public abstract class GameCore {
             public void run() {
                 try {
                     Thread.sleep(2000);
-                } catch (InterruptedException ex) {}
+                } catch (InterruptedException ex) {
+                }
                 System.exit(0);
             }
         };
@@ -45,7 +46,7 @@ public abstract class GameCore {
 
     public void init() {
         screen = new ScreenManager();
-        screen.setWindowedMode(WINDOW_WIDTH, WINDOW_HEIGHT);
+        screen.setFullScreenMode();
 
         Window window = screen.getWindow();
         window.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));

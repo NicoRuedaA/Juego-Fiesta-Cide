@@ -17,12 +17,12 @@ public class PlayerController {
 
     private InputManager inputManager;
 
-    private final GameAction moveLeft    = new GameAction("moveLeft");
-    private final GameAction moveRight   = new GameAction("moveRight");
-    private final GameAction jump        = new GameAction("jump");
-    private final GameAction sprint      = new GameAction("sprint");
-    private final GameAction duck        = new GameAction("duck");
-    private final GameAction exit        = new GameAction("exit",        GameAction.DETECT_INITAL_PRESS_ONLY);
+    private final GameAction moveLeft = new GameAction("moveLeft");
+    private final GameAction moveRight = new GameAction("moveRight");
+    private final GameAction jump = new GameAction("jump");
+    private final GameAction sprint = new GameAction("sprint");
+    private final GameAction duck = new GameAction("duck");
+    private final GameAction exit = new GameAction("exit", GameAction.DETECT_INITAL_PRESS_ONLY);
     private final GameAction toggleDebug = new GameAction("toggleDebug", GameAction.DETECT_INITAL_PRESS_ONLY);
 
     /**
@@ -32,14 +32,18 @@ public class PlayerController {
         inputManager = new InputManager(window);
         inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
 
-        inputManager.mapToKey(moveLeft,    KeyEvent.VK_LEFT);
-        inputManager.mapToKey(moveRight,   KeyEvent.VK_RIGHT);
-        inputManager.mapToKey(jump,        KeyEvent.VK_UP);
-        inputManager.mapToKey(duck,        KeyEvent.VK_DOWN);
-        inputManager.mapToKey(sprint,      KeyEvent.VK_SHIFT);
-        inputManager.mapToKey(sprint,      KeyEvent.VK_Z);
-        inputManager.mapToKey(exit,        KeyEvent.VK_ESCAPE);
+        inputManager.mapToKey(moveLeft, KeyEvent.VK_LEFT);
+        inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
+        inputManager.mapToKey(jump, KeyEvent.VK_UP);
+        inputManager.mapToKey(duck, KeyEvent.VK_DOWN);
+        inputManager.mapToKey(sprint, KeyEvent.VK_SHIFT);
+        inputManager.mapToKey(sprint, KeyEvent.VK_Z);
+        inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
         inputManager.mapToKey(toggleDebug, KeyEvent.VK_F1);
+        inputManager.mapToKey(moveLeft, KeyEvent.VK_A);
+        inputManager.mapToKey(moveRight, KeyEvent.VK_D);
+        inputManager.mapToKey(jump, KeyEvent.VK_W);
+        inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
     }
 
     /** Returns true if the debug toggle was pressed this frame. */
@@ -50,11 +54,13 @@ public class PlayerController {
     /**
      * Aplica el input del frame al jugador.
      *
-     * @param elapsedTime ms desde el último frame (necesario para el boost de salto)
+     * @param elapsedTime ms desde el último frame (necesario para el boost de
+     *                    salto)
      * @return true si se pulsó exit
      */
     public boolean update(Player player, long elapsedTime) {
-        if (!player.isAlive()) return exit.isPressed();
+        if (!player.isAlive())
+            return exit.isPressed();
 
         player.setSprinting(sprint.isPressed());
 
@@ -65,8 +71,10 @@ public class PlayerController {
         float vx = 0;
         // Agachado: no puede moverse a los lados
         if (!isDucking) {
-            if (moveLeft.isPressed())  vx -= player.getMaxSpeed();
-            if (moveRight.isPressed()) vx += player.getMaxSpeed();
+            if (moveLeft.isPressed())
+                vx -= player.getMaxSpeed();
+            if (moveRight.isPressed())
+                vx += player.getMaxSpeed();
         }
         player.setVelocityX(vx);
 

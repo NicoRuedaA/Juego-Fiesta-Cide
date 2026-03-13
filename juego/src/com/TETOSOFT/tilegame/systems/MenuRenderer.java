@@ -12,17 +12,17 @@ public class MenuRenderer {
     // -------------------------------------------------------------------------
     // Paleta
     // -------------------------------------------------------------------------
-    private static final Color BG_OVERLAY   = new Color(0, 0, 0, 200);
-    private static final Color TITLE_COLOR  = new Color(255, 220, 50);
-    private static final Color BTN_NORMAL   = new Color(40, 40, 60, 220);
-    private static final Color BTN_HOVER    = new Color(80, 80, 140, 240);
-    private static final Color BTN_BORDER   = new Color(255, 255, 255, 80);
-    private static final Color BTN_TEXT     = Color.WHITE;
-    private static final Color PAUSE_COLOR  = new Color(255, 255, 255, 220);
+    private static final Color BG_OVERLAY = new Color(0, 0, 0, 200);
+    private static final Color TITLE_COLOR = new Color(255, 255, 255);
+    private static final Color BTN_NORMAL = new Color(40, 40, 60, 220);
+    private static final Color BTN_HOVER = new Color(80, 80, 140, 240);
+    private static final Color BTN_BORDER = new Color(255, 255, 255, 80);
+    private static final Color BTN_TEXT = Color.WHITE;
+    private static final Color PAUSE_COLOR = new Color(255, 255, 255, 220);
 
-    private static final int BTN_W      = 300;
-    private static final int BTN_H      = 54;
-    private static final int BTN_GAP    = 18;
+    private static final int BTN_W = 300;
+    private static final int BTN_H = 54;
+    private static final int BTN_GAP = 18;
     private static final int BTN_RADIUS = 12;
 
     // -------------------------------------------------------------------------
@@ -32,19 +32,14 @@ public class MenuRenderer {
     public void drawMainMenu(Graphics2D g, int sw, int sh, int hoveredButton) {
         enableAA(g);
 
-        // Fondo oscuro
-        g.setColor(BG_OVERLAY);
-        g.fillRect(0, 0, sw, sh);
-
         // Título
         g.setFont(new Font("Monospaced", Font.BOLD, 64));
-        drawCenteredText(g, "SUPER MIRO", sw, sh / 2 - 120, TITLE_COLOR);
+        drawCenteredText(g, "SUPER CIDE BROS", sw, sh / 2 - 120, TITLE_COLOR);
 
         g.setFont(new Font("Monospaced", Font.BOLD, 20));
-        drawCenteredText(g, "GAME", sw, sh / 2 - 60, new Color(200, 200, 200));
 
-        // Botones: 0=Jugar  1=Ajustes  2=Salir
-        String[] labels = {"▶  JUGAR", "⚙  AJUSTES", "✕  SALIR"};
+        // Botones: 0=Jugar 1=Ajustes 2=Salir
+        String[] labels = { "▶  JUGAR", "⚙  AJUSTES", "✕  SALIR" };
         int startY = sh / 2;
         for (int i = 0; i < labels.length; i++) {
             int x = (sw - BTN_W) / 2;
@@ -54,8 +49,7 @@ public class MenuRenderer {
 
         // Hint teclado
         g.setFont(new Font("Monospaced", Font.PLAIN, 13));
-        drawCenteredText(g, "↑ ↓ para navegar  ·  ENTER para seleccionar",
-                sw, sh - 40, new Color(160, 160, 160));
+
     }
 
     // -------------------------------------------------------------------------
@@ -72,8 +66,8 @@ public class MenuRenderer {
         g.setFont(new Font("Monospaced", Font.BOLD, 72));
         drawCenteredText(g, "GAME OVER", sw, sh / 2 - 100, new Color(220, 50, 50));
 
-        // Botones: 0=Volver a jugar  1=Menú principal
-        String[] labels = {"↺  VOLVER A JUGAR", "⌂  MENÚ PRINCIPAL"};
+        // Botones: 0=Volver a jugar 1=Menú principal
+        String[] labels = { "↺  VOLVER A JUGAR", "⌂  MENÚ PRINCIPAL" };
         int startY = sh / 2;
         for (int i = 0; i < labels.length; i++) {
             int x = (sw - BTN_W) / 2;
@@ -117,7 +111,7 @@ public class MenuRenderer {
     // -------------------------------------------------------------------------
 
     private void drawButton(Graphics2D g, int x, int y, int w, int h,
-                            String label, boolean hovered) {
+            String label, boolean hovered) {
         RoundRectangle2D rect = new RoundRectangle2D.Float(x, y, w, h, BTN_RADIUS, BTN_RADIUS);
 
         g.setColor(hovered ? BTN_HOVER : BTN_NORMAL);
@@ -135,6 +129,31 @@ public class MenuRenderer {
         g.drawString(label, tx, ty);
     }
 
+    public void drawVictory(Graphics2D g, int sw, int sh, int hoveredButton) {
+        enableAA(g);
+
+        g.setColor(BG_OVERLAY);
+        g.fillRect(0, 0, sw, sh);
+
+        g.setFont(new Font("Monospaced", Font.BOLD, 72));
+        drawCenteredText(g, "¡VICTORIA!", sw, sh / 2 - 100, new Color(50, 220, 80));
+
+        g.setFont(new Font("Monospaced", Font.BOLD, 24));
+        drawCenteredText(g, "Has completado todos los niveles", sw, sh / 2 - 30, new Color(200, 200, 200));
+
+        String[] labels = { "▶  JUGAR DE NUEVO", "⌂  MENÚ PRINCIPAL" };
+        int startY = sh / 2 + 20;
+        for (int i = 0; i < labels.length; i++) {
+            int x = (sw - BTN_W) / 2;
+            int y = startY + i * (BTN_H + BTN_GAP);
+            drawButton(g, x, y, BTN_W, BTN_H, labels[i], hoveredButton == i);
+        }
+
+        g.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        drawCenteredText(g, "↑ ↓ para navegar  ·  ENTER para seleccionar",
+                sw, sh - 40, new Color(160, 160, 160));
+    }
+
     private void drawCenteredText(Graphics2D g, String text, int sw, int y, Color color) {
         g.setColor(color);
         FontMetrics fm = g.getFontMetrics();
@@ -142,7 +161,7 @@ public class MenuRenderer {
     }
 
     private void enableAA(Graphics2D g) {
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,      RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     }
 }

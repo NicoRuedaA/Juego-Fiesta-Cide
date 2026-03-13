@@ -1,10 +1,7 @@
 package com.TETOSOFT.graphics;
 
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
 
 /**
  * Capa visual CRT que se dibuja encima de todo el juego.

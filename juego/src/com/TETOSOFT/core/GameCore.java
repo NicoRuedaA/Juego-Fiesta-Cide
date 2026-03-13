@@ -39,7 +39,7 @@ public abstract class GameCore {
      */
     public void init() {
         screen = new ScreenManager();
-        screen.setWindowedMode(GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
+        screen.setFullScreenMode();
 
         Window window = screen.getWindow();
         window.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));

@@ -18,8 +18,8 @@ public class MapLoader {
 
     public int currentMap = 0;
 
-    private final AssetManager  assets;
-    private final MapParser     parser;
+    private final AssetManager assets;
+    private final MapParser parser;
 
     public MapLoader(GraphicsConfiguration gc) {
         assets = new AssetManager(gc);
@@ -27,20 +27,25 @@ public class MapLoader {
         parser = new MapParser(assets, spriteFactory);
     }
 
-    /** Returns an {@link AssetManager} so callers can load images (e.g. background). */
-    public AssetManager getAssets() { return assets; }
+    /**
+     * Returns an {@link AssetManager} so callers can load images (e.g. background).
+     */
+    public AssetManager getAssets() {
+        return assets;
+    }
 
-    /** Advances to the next map and returns it, wrapping around to map 1 if needed. */
+    /**
+     * Advances to the next map and returns it, wrapping around to map 1 if needed.
+     */
+    /** Avanza al siguiente mapa. Devuelve null si no hay más (victoria). */
     public TileMap loadNextMap() {
         TileMap map = null;
-        while (map == null) {
-            currentMap++;
-            try {
-                map = parser.parse("maps/map" + currentMap + ".txt");
-            } catch (IOException ex) {
-                if (currentMap == 1) return null;   // no maps at all
-                currentMap = 0;                     // wrap around
-            }
+        currentMap++;
+        try {
+            map = parser.parse("maps/map" + currentMap + ".txt");
+        } catch (IOException ex) {
+            // No existe el siguiente mapa → se acabaron los niveles
+            return null; // GameEngine interpretará esto como victoria
         }
         return map;
     }
