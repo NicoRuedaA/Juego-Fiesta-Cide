@@ -29,13 +29,13 @@ public class SpriteFactory {
 
     public SpriteFactory(AssetManager assets) {
         this.assets = assets;
-        playerSprite = buildPlayerSprite();
-        flySprite = buildFlySprite();
-        grubSprite = buildGrubSprite();
+        playerSprite     = buildPlayerSprite();
+        flySprite        = buildFlySprite();
+        grubSprite       = buildGrubSprite();
         variantFlySprite = buildVariantFlySprite();
-        coinSprite = buildCoinSprite();
-        musicSprite = buildMusicSprite();
-        goalSprite = buildGoalSprite();
+        coinSprite       = buildCoinSprite();
+        musicSprite      = buildMusicSprite();
+        goalSprite       = buildGoalSprite();
     }
 
     // -------------------------------------------------------------------------
@@ -75,9 +75,6 @@ public class SpriteFactory {
      * No se clona desde prototipo porque el Supplier no es clonable.
      */
     public SpawnerGrub getSpawnerGrub() {
-        // Reusar las animaciones del grub normal clonándolas
-        Grub proto = (Grub) grubSprite;
-        // Reconstruir desde imágenes para obtener animaciones frescas
         Image g1 = assets.loadImage("enemy2.png");
         Image g2 = assets.loadImage("enemy22.png");
         Animation[] a = buildFourOrientations(
@@ -94,33 +91,27 @@ public class SpriteFactory {
     // -------------------------------------------------------------------------
 
     private Sprite buildPlayerSprite() {
+        // El archivo en el JAR es player.PNG — AssetManager lo resuelve solo
         Image sheet = assets.loadImage("player.png");
 
-        // Recortar primero los frames del sheet original, luego espejear frame a frame.
-        // Esto preserva el orden de frames en todas las orientaciones.
-        Animation right = createPlayerAnim(sheet, false, false);
-        Animation left = createPlayerAnim(sheet, true, false);
+        Animation right     = createPlayerAnim(sheet, false, false);
+        Animation left      = createPlayerAnim(sheet, true,  false);
         Animation deadRight = createPlayerAnim(sheet, false, true);
-        Animation deadLeft = createPlayerAnim(sheet, true, true);
+        Animation deadLeft  = createPlayerAnim(sheet, true,  true);
 
-        // Creature(left, right, deadLeft, deadRight)
         Player player = new Player(left, right, deadLeft, deadRight);
         player.setDuckImage(assets.loadImage("player_duck.png"));
         return player;
     }
 
     /**
-     * Frame layout inside the returned Animation:
-     * 0,1,2 → walk cycle (índices usados por el auto-advance al caminar)
-     * 3 → idle (setCurrFrame(3) cuando está parado)
-     * 4 → jump (setCurrFrame(4) cuando está en el aire)
-     *
-     * Todos los frames tienen duración real (>0) para no corromper totalDuration.
-     */
-    /**
      * Recorta los frames del sheet y opcionalmente los espejea/voltea frame a
-     * frame,
-     * preservando siempre el orden original de los frames.
+     * frame, preservando siempre el orden original de los frames.
+     *
+     * Frame layout:
+     *   0,1,2 → walk cycle
+     *   3     → idle
+     *   4     → jump
      */
     private Animation createPlayerAnim(Image playerSheet, boolean mirror, boolean flip) {
         final int TOTAL_FRAMES = 5;
@@ -135,19 +126,15 @@ public class SpriteFactory {
         BufferedImage[] frames = new BufferedImage[TOTAL_FRAMES];
 
         for (int i = 0; i < TOTAL_FRAMES; i++) {
-            // Recortar frame del sheet original
             BufferedImage raw = gc.createCompatibleImage(w, h, Transparency.BITMASK);
             Graphics g = raw.getGraphics();
             g.drawImage(playerSheet, 0, 0, w, h, i * w, 0, (i + 1) * w, h, null);
             g.dispose();
 
-            // Aplicar transformaciones frame a frame
             Image transformed = raw;
-            if (mirror)
-                transformed = assets.getMirrorImage(transformed);
-            if (flip)
-                transformed = assets.getFlippedImage(transformed);
-            // Convertir Image a BufferedImage si las transformaciones cambiaron el tipo
+            if (mirror) transformed = assets.getMirrorImage(transformed);
+            if (flip)   transformed = assets.getFlippedImage(transformed);
+
             if (transformed instanceof BufferedImage) {
                 frames[i] = (BufferedImage) transformed;
             } else {
@@ -159,8 +146,7 @@ public class SpriteFactory {
         }
 
         Animation anim = new Animation();
-        for (int i : WALK_FRAMES)
-            anim.addFrame(frames[i], 100);
+        for (int i : WALK_FRAMES) anim.addFrame(frames[i], 100);
         anim.addFrame(frames[IDLE_FRAME], 100);
         anim.addFrame(frames[JUMP_FRAME], 100);
         return anim;
@@ -228,6 +214,7 @@ public class SpriteFactory {
 
     private Sprite buildCoinSprite() {
         Animation anim = new Animation();
+        // Los archivos en el JAR son coin1.PNG...coin5.PNG — AssetManager los resuelve
         for (int i = 1; i <= 5; i++)
             anim.addFrame(assets.loadImage("coin" + i + ".png"), 250);
         return new PowerUp.Star(anim);
@@ -235,10 +222,9 @@ public class SpriteFactory {
 
     private Sprite buildMusicSprite() {
         Animation anim = new Animation();
-        anim.addFrame(assets.loadImage("music1.png"), 150);
-        anim.addFrame(assets.loadImage("music2.png"), 150);
-        anim.addFrame(assets.loadImage("music3.png"), 150);
-        anim.addFrame(assets.loadImage("music2.png"), 150);
+        // En el JAR no existen music1-3.png; se usan star1-3.PNG como fallback visual
+        for (int i = 1; i <= 3; i++)
+            anim.addFrame(assets.loadImage("star" + i + ".png"), 150);
         return new PowerUp.Music(anim);
     }
 

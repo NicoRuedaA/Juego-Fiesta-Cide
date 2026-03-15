@@ -31,7 +31,7 @@ public class MapParser {
 
     /**
      * Maps a map-file character to the prototype sprite that should be placed
-     * at that position.  Adding a new entity only requires one line here.
+     * at that position.
      */
     private final Map<Character, Sprite> spriteMap;
 
@@ -83,10 +83,6 @@ public class MapParser {
     // Private helpers
     // -------------------------------------------------------------------------
 
-    /**
-     * Defines which character in the map file spawns which sprite type.
-     * To add a new entity: add one entry here.
-     */
     private Map<Character, Sprite> buildSpriteMap() {
         Map<Character, Sprite> map = new HashMap<>();
         map.put('o', spriteFactory.getCoin());
@@ -94,23 +90,43 @@ public class MapParser {
         map.put('*', spriteFactory.getGoal());
         map.put('1', spriteFactory.getGrub());
         map.put('2', spriteFactory.getFly());
-        map.put('3', spriteFactory.getSpawnerGrub()); // SpawnerGrub — instancia VariantFly cada 5s
+        map.put('3', spriteFactory.getSpawnerGrub());
         return map;
     }
 
+    /**
+     * Carga las imágenes de tiles (A.png, B.png, ...) desde el classpath
+     * (dentro del JAR) o desde disco en modo desarrollo.
+     */
     private void loadTileImages() {
         char ch = 'A';
         while (true) {
             String name = ch + ".png";
-            if (!new File("images/" + name).exists()) break;
+            // Verificar existencia via classpath — funciona dentro y fuera del JAR
+            if (AssetManager.class.getResource("/images/" + name) == null
+                    && !new File("images/" + name).exists()) {
+                break;
+            }
             tileImages.add(assets.loadImage(name));
             ch++;
         }
     }
 
+    /**
+     * Lee las líneas del mapa desde el classpath (JAR) o desde disco (dev).
+     */
     private List<String> readLines(String path) throws IOException {
         List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+
+        // 1. Intentar desde classpath (dentro del JAR)
+        InputStream is = MapParser.class.getResourceAsStream("/" + path);
+
+        // 2. Fallback: leer desde disco (modo desarrollo)
+        if (is == null) {
+            is = new FileInputStream(path);
+        }
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (!line.startsWith("#")) lines.add(line);
@@ -119,7 +135,7 @@ public class MapParser {
         return lines;
     }
 
-    /** Clones a prototype sprite and positions it on the given tile. */
+    /** Clona un sprite prototipo y lo posiciona en el tile dado. */
     private void placeSprite(TileMap map, Sprite prototype, int tileX, int tileY) {
         Sprite sprite = (Sprite) prototype.clone();
         int pixX = TileMapDrawer.tilesToPixels(tileX)
