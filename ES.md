@@ -1,3 +1,5 @@
+[Read in English](README.md)
+
 # Super Cide Bros
 
 <p align="center">
