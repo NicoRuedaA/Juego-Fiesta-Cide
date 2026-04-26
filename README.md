@@ -1,3 +1,5 @@
+[Leer en Español](ES.md)
+
 # Super Cide Bros
 
 <p align="center">
@@ -284,8 +286,7 @@ PLAYER_JUMP_HOLD_MAX       // Max ms the boost applies (prevents infinite flight
 
 ---
 
-*Developed with Java + passion for Fiesta CIDE 2026*
+*Developed with Java + passion*
 
 ---
 
-[🇪🇸 Leer en Español](ES.md)
