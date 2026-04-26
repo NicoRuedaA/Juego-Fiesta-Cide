@@ -1,27 +1,23 @@
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
-.project
-.classpath
-
 # NetBeans specific
-/nbproject/private/
-/nbproject/Makefile-*.mk
-/nbproject/Package-*.bash
-/build/
-/dist/
+nbproject/private/
+nbproject/Makefile-*.mk
+nbproject/Package-*.bash
+nbproject/build-impl.xml
+nbproject/genfiles.properties
+nbproject/project.properties
+nbproject/project.xml
+build/
+dist/
 
 # Compiled class files
 *.class
-*.log
+
+# JAR file (generated build)
+*.jar
 
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
